@@ -16,19 +16,19 @@
 */
 
 %macro makeTempArray(arrayname=, ischar=, items=);
-    %let n=%sysfunc(countw(&items., ',', )); /*count the number of items to reserve space for*/
+    %let n=%sysfunc(countw(&items., %str(,), )); /*count the number of items to reserve space for*/
    
     %if &ischar.=Y %then %do; /*if this is a character array, we need the length of the longest item*/ 
         %let l = 1;
         %do j = 1 %to &n.;
-            %let l0 = %sysfunc(length(%sysfunc(scan(&items., &j., ',', r))));
+            %let l0 = %sysfunc(length(%sysfunc(scan(&items., &j., %str(,), r))));
             %if  &l0. > &l. %then %let l = &l0.;
         %end;
     %end;
     
     array &arrayname. {&n.} %if &ischar.=Y %then $&l.; _temporary_ (
         %do i = 1 %to &n.;
-            %let item = %sysfunc(scan(&items., &i., ',', r));
+            %let item = %sysfunc(scan(&items., &i., %str(,), r));
             %if &ischar.=Y %then %str("&item." ); %else &item.;
         %end;
     );
